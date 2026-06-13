@@ -1,0 +1,33 @@
+# Node.js
+node_modules/
+dist/
+dist-ssr/
+*.local
+.vite/
+
+# Python compiled files
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+.Python
+env/
+venv/
+.venv/
+pip-log.txt
+pip-delete-this-directory.txt
+
+# Databases
+data/*.db
+data/*.db-wal
+data/*.db-shm
+data/*.db-journal
+
+# System files
+.DS_Store
+.DS_Store?
+._*
+.Spotlight-V100
+.Trashes
+ehthumbs.db
+Thumbs.db
