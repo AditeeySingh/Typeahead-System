@@ -125,24 +125,24 @@ search-typeahead/
 ### Feature 2: Debounced Autocomplete & Keyboard Navigation
 * **How it works:** Keystrokes in the search field are debounced by 250ms to prevent hammering the backend. The suggestions dropdown supports full accessibility controls: `ArrowDown` / `ArrowUp` to select suggestions, `Escape` to close, and `Enter` to submit the selection.
 * **Autocomplete UI Screenshot:**
-  ![Search Autocomplete Dropdown](docs/screenshots/suggestions_dropdown.png) *(Place a screenshot here showing the clean dark-slate suggestion dropdown in action)*
+  ![Search Autocomplete Dropdown](docs/screenshots/suggestions_dropdown.png) 
 
 ### Feature 3: Cache Node Routing & Consistent Hashing Visualizer
 * **How it works:** Autocomplete cache is distributed across three logical cache nodes (`CacheNode-A`, `CacheNode-B`, `CacheNode-C`). Keys are mapped to a hash circle $[0, 2^{32}-1]$ using MD5. We assign **50 virtual nodes** to each node to balance key distributions.
 * **Real-time Ring Trace:** The UI queries `/cache/debug?prefix=q` on keypress, showing the mapped node highlighted on the Hash Ring and logging debug outputs (routed node, cache hit/miss status).
 * **Hash Ring Routing Screenshot:**
-  ![Cache Node Routing Visualizer](docs/screenshots/hashing_ring_routing.png) *(Place a screenshot here showing the visual "Cache Node Routing" panel when typing a prefix)*
+  ![Cache Node Routing Visualizer](docs/screenshots/hashing_ring_routing.png) 
 
 ### Feature 4: Batch Writes & Write Reduction Telemetry
 * **How it works:** Search submissions (`POST /search`) bypass direct disk writes and are put in an in-memory queue. A background thread aggregates duplicate records (e.g. 50 inputs of `"react"` are merged). Every 5 seconds, it updates the database via a bulk upsert transaction.
 * **Telemetry Visual:** The frontend dashboard monitors searches received, database writes completed, and logs the percentage of database disk writes saved.
 * **Batching Stats Telemetry Screenshot:**
-  ![Batch writes statistics telemetry](docs/screenshots/batch_writes_telemetry.png) *(Place a screenshot here showing the "Buffer & Writes" progress panel with high write-reduction percentage)*
+  ![Batch writes statistics telemetry](docs/screenshots/batch_writes_telemetry.png) 
 
 ### Feature 5: Recency-Aware Scoring & Decay Controls
 * **How it works:** Ranks are computed dynamically using: $Score = 0.7 \times recent + 0.3 \times total$. To decay old viral spikes, a background worker runs every 60 seconds, scaling recent searches: $recent \leftarrow recent \times 0.75$, and clearing cache nodes to re-sort suggestion ranks.
 * **Decay Telemetry Screenshot:**
-  ![Trending Searches and Decay Control](docs/screenshots/trending_decay.png) *(Place a screenshot here showing the "Trending Searches" listing and "System Controls" buttons)*
+  ![Trending Searches and Decay Control](docs/screenshots/trending_decay.png) 
 
 ---
 
