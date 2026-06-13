@@ -196,4 +196,10 @@ def trigger_manual_decay():
 
 if __name__ == "__main__":
     import uvicorn
-    uvicorn.run("backend.main:app", host="127.0.0.1", port=8000, reload=True)
+    import os
+    port = int(os.environ.get("PORT", 8000))
+    # Bind to 0.0.0.0 when hosted in cloud environments (Render) to allow external routing,
+    # and default to 127.0.0.1 when running locally.
+    host = "0.0.0.0" if os.environ.get("PORT") else "127.0.0.1"
+    reload = False if os.environ.get("PORT") else True
+    uvicorn.run("backend.main:app", host=host, port=port, reload=reload)
