@@ -17,8 +17,39 @@ latency_history = collections.deque(maxlen=1000)
 
 @asynccontextmanager
 async def lifespan(app: FastAPI):
-    """Handles startup and shutdown lifecycles of background workers."""
-    # Startup
+    """Handles startup and shutdown lifecycles of background workers and database verifications."""
+    # Startup: Auto-seed database if the file or tables are missing
+    import os
+    import sqlite3
+    from backend.config import DB_PATH
+    
+    # Ensure parent data directory exists
+    os.makedirs(os.path.dirname(DB_PATH), exist_ok=True)
+    
+    table_exists = False
+    if os.path.exists(DB_PATH):
+        try:
+            conn = sqlite3.connect(DB_PATH)
+            cursor = conn.cursor()
+            cursor.execute("SELECT name FROM sqlite_master WHERE type='table' AND name='search_queries';")
+            if cursor.fetchone():
+                table_exists = True
+            conn.close()
+        except Exception:
+            pass
+            
+    if not table_exists:
+        print("SQLite table 'search_queries' not found. Starting automatic seeder...")
+        try:
+            from backend.seed import generate_queries, apply_zipf_distribution, save_to_csv, seed_database
+            raw_queries = generate_queries(120000)
+            zipf_data = apply_zipf_distribution(raw_queries)
+            save_to_csv(zipf_data)
+            seed_database()
+            print("Automatic database seeding completed successfully.")
+        except Exception as e:
+            print(f"CRITICAL: Failed to auto-seed database on server boot: {e}")
+
     batch_writer.start()
     decay_worker.start()
     yield
